@@ -57,8 +57,8 @@ public class EventSource {
         public var headers: [String: String] = [:]
         /// Transform function to allow dynamically configuring the headers on each API request.
         public var headerTransform: HeaderTransform = { $0 }
-        /// The flag to reconnect when connection closed by remote peer
-        public var reconnect: Bool = true
+        /// Determines whether to automatically reconnect when the connection is closed or abnormally closed by the remote peer
+        public var autoReconnect: Bool = true
         /// The minimum amount of time to wait before reconnecting after a failure
         public var reconnectTime: TimeInterval = 1.0
         /// The maximum amount of time to wait before reconnecting after a failure
@@ -278,7 +278,7 @@ class EventSourceDelegate: NSObject, URLSessionDataDelegate {
         }
 
         readyState = .closed
-        if config.reconnect {
+        if config.autoReconnect {
             let sleep = reconnectionTimer.reconnectDelay(baseDelay: currentRetry)
             logger.log(.info, "Waiting %.3f seconds before reconnecting...", sleep)
             delegateQueue.asyncAfter(deadline: .now() + sleep) { [weak self] in
